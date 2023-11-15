@@ -1,0 +1,7 @@
+19 Boot //write value to acc
+1 0 //write acc value to cache
+19 0000 //null terminator
+1 1
+23 4096 //set ram address reg to 4096 the output buffer
+20 0 8 // write 8 bytes of cache memory to ram 
+22 //halt

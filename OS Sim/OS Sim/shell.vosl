@@ -1,0 +1,2 @@
+enable outputshell
+print "hello_world"
