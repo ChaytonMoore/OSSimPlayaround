@@ -3,11 +3,28 @@
 
 
 
+std::vector<std::string> splitStr(const std::string& str, const std::string& delim)
+{
+    std::vector<std::string> tokens;
+    size_t prev = 0, pos = 0;
+    do
+    {
+        pos = str.find(delim, prev);
+        if (pos == std::string::npos) pos = str.length();
+        std::string token = str.substr(prev, pos - prev);
+        if (!token.empty()) tokens.push_back(token);
+        prev = pos + delim.length();
+    } while (pos < str.length() && prev < str.length());
+    return tokens;
+}
+
+
 
 void Compiler::compilePrint(std::string text)
 {
     //need to split string into arrays of 4 chars
     char* functionCode;
+    uint32_t functionLen = 0;
 
     //how to compile a print statement
     //first split the text into an array of fours and add null terminators at the end
@@ -18,25 +35,27 @@ void Compiler::compilePrint(std::string text)
     {
         if (i%4==0)
         {
-            char nquad[4];
+            char* nquad = new char[4];
             nquad[0] = text.at(i);
-
+            nquad[1] = '\0';
+            nquad[2] = '\0';
+            nquad[3] = '\0';
 
             stringQuads.push_back(nquad);
+            fpos = 0;
         }
         else
         {
-            if (text.size()<=i)
-            {
-                fpos = i % 4;
-                stringQuads.back()[i % 4] = '\0';
-            }
+
             stringQuads.back()[i % 4] = text.at(i);
+            fpos = i % 4;
+            
+
         }
 
     }
 
-    if (fpos == 0)
+    if (fpos == 3)
     {
         char nquad[4];
         nquad[0] = '\0';
@@ -49,22 +68,56 @@ void Compiler::compilePrint(std::string text)
 
     functionCode = new char[16* stringQuads.size()+16];
     //for each quad
-    for (size_t i = 0; i < stringQuads.size(); i+=16)
+
+
+    uint32_t buff1;
+
+    for (size_t i = 0; i < stringQuads.size(); i++)
     {
-        functionCode[i] = 19;
-        functionCode[i + 4] = *stringQuads.at(i);
-        functionCode[i + 8] = 1;
-        functionCode[i + 12] = (uint32_t)i;
+        buff1 = 19;
+        std::memcpy(functionCode + i*16,&buff1,4);
+
+        std::memcpy(functionCode + i*16 + 4, stringQuads.at(i), 4);
+
+        buff1 = 1;
+        std::memcpy(functionCode + i*16 + 8, &buff1, 4);
+
+        buff1 = i+64;
+        std::memcpy(functionCode + i*16 + 12, &buff1, 4);
+
+
 
 
     }
 
-    functionCode[16 * stringQuads.size()] = 23;
-    functionCode[16 * stringQuads.size()+4] = *(char*)(uint32_t)4096;
-    functionCode[16 * stringQuads.size() + 8] = 20;
-    functionCode[16 * stringQuads.size() + 16] = *(char*)(uint16_t)8;
+    uint32_t oset = 16 * stringQuads.size();
 
 
+    buff1 = 23;
+    std::memcpy(functionCode+oset,&buff1,4);
+
+    buff1 = 4096;
+    std::memcpy(functionCode + oset + 4, &buff1, 4);
+
+    buff1 = 20;
+    std::memcpy(functionCode + oset + 8, &buff1, 4);
+
+
+    uint16_t buff2 = 64;
+    std::memcpy(functionCode + oset + 12, &buff2, 2);
+
+    buff2 = stringQuads.size()*4;
+    std::memcpy(functionCode + oset + 14, &buff2, 2);
+
+
+    functionLen = oset + 16;
+
+
+   
+    //write to compiled code
+    std::memcpy(compiledData+compiledLen,functionCode,functionLen);
+    compiledLen += functionLen;
+    delete[] functionCode;
 
 }
 
@@ -85,23 +138,28 @@ void Compiler::compileLine(std::string in)
 
     if (command == "print")
     {
-        compilePrint(in.substr(1, in.find(delimiter)));
+        compilePrint(splitStr(in," ").at(1));
     }
     else if (command == "enable")
     {
-        compileEnable(in.substr(1, in.find(delimiter)));
+        compileEnable(splitStr(in, " ").at(1));
     }
 }
 
 void Compiler::compile()
 {
+
+
+    std::cout << "Starting Compiling" << std::endl;
+
+
     compiledData = new char[4096];
     compiledLen = 0;
 
 
     std::ifstream src;
     std::string line;
-    src.open("shell.vosl");
+    src.open("test.vosl");
     if (src.is_open())
     {
         while (std::getline(src, line))
@@ -111,4 +169,19 @@ void Compiler::compile()
         src.close();
     }
     src.close();
+
+    //write code to file
+
+    std::ofstream outputFile;
+    outputFile.open("test.vosmc", std::ios::binary | std::ios::out);
+
+    outputFile.write((char*) & compiledLen, 4);
+    outputFile.write(compiledData,compiledLen);
+    outputFile.close();
+
+
+    std::cout << "Finished Compiling"<<std::endl;
+
+
+
 }
