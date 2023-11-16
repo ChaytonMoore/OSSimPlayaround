@@ -72,6 +72,7 @@ bool CPU::runInstruction()
 	//24: jump relative
 	//25: jump if acc 0 relative
 	//26: increment registry
+	//27: set acc to register value at acc idx
 	
 
 	//how 8 and 9 works
@@ -308,6 +309,12 @@ bool CPU::runInstruction()
 
 			_registers[_instructions[_counter * 2 + 1]]++;
 			_counter++;
+
+
+		case 27:
+			_accumulator = _registers[_accumulator];
+
+
 
 
 		default:

@@ -24,7 +24,6 @@ private:
 	int _registers[1024];
 	__int32 _instructions[2048];
 
-
 	bool runInstruction();
 
 

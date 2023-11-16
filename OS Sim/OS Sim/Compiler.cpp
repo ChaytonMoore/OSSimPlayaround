@@ -23,8 +23,8 @@ std::vector<std::string> splitStr(const std::string& str, const std::string& del
 void Compiler::compilePrint(std::string text)
 {
     //need to split string into arrays of 4 chars
-    char* functionCode;
-    uint32_t functionLen = 0;
+
+    functionLen = 0;
 
     //how to compile a print statement
     //first split the text into an array of fours and add null terminators at the end
@@ -123,66 +123,111 @@ void Compiler::compilePrint(std::string text)
 
 void Compiler::compileInput(int address)
 {
-    char* functionData = new char[64];
-    uint32_t functionLen = 0;
+    functionCode = new char[64];
+     functionLen = 0;
 
     uint32_t buff1 = 21;
-    std::memcpy(functionData + functionLen, &buff1, 4);
+    std::memcpy(functionCode + functionLen, &buff1, 4);
     functionLen += 4;
 
     uint16_t buff2 = address;
-    std::memcpy(functionData + functionLen, &buff2, 2);
+    std::memcpy(functionCode + functionLen, &buff2, 2);
     buff2 = 256;
-    std::memcpy(functionData + functionLen + 2, &buff2, 2);
+    std::memcpy(functionCode + functionLen + 2, &buff2, 2);
     functionLen += 4;
 
 
-    std::memcpy(compiledData + compiledLen, functionData, functionLen);
+    std::memcpy(compiledData + compiledLen, functionCode, functionLen);
     compiledLen += functionLen;
-    delete[] functionData;
+    delete[] functionCode;
 
 
 }
 
 void Compiler::compilePrintValue(int address)
 {
-    char* functionData = new char[256];
-    uint32_t functionLen = 0;
+    functionCode = new char[256];
+    functionLen = 0;
 
 
     //load into the acc the constant value
     uint32_t buff = 19;
-    memcpy(functionData + functionLen, &buff,4);
+    memcpy(functionCode + functionLen, &buff,4);
     functionLen += 4;
 
     buff = address;
-    memcpy(functionData + functionLen, &buff, 4);
+    memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
 
 
     //load that into a memory address 128, this is the start value
     buff = 1;
-    memcpy(functionData + functionLen, &buff, 4);
+    memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
 
     buff = 128;
-    memcpy(functionData + functionLen, &buff, 4);
+    memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
 
 
     //copy this value into 129 as this will be the sort of length value.
     buff = 1;
-    memcpy(functionData + functionLen, &buff, 4);
+    memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
 
     buff = 129;
-    memcpy(functionData + functionLen, &buff, 4);
+    memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
 
-    int32_t buff2;
+   
+
+
+    buff = 19;
+    memcpy(functionCode+functionLen, &buff,4);
+    functionLen += 4;
+
+    buff = 129;
+    memcpy(functionCode + functionLen, &buff, 4);
+    functionLen += 4;
+
+    
+
+    buff = 27;
+    memcpy(functionCode + functionLen, &buff, 4);
+    functionLen += 8;
+
+    buff = 25;
+    memcpy(functionCode + functionLen, &buff, 4);
+    functionLen += 4;
+
+    int buff2 = 3;
+    memcpy(functionCode + functionLen, &buff2, 4);
+    functionLen += 4;
+
+    writeInstructionPart(26); //increment registry
+    writeInstructionPart(129);
+
+    writeInstructionPart(24);
+    writeInstructionPartSigned(-4);
 
 
 
+    //end found
+
+
+
+    writeInstructionPart(1); //read 129 into acc
+    writeInstructionPart(129);
+
+    writeInstructionPart(3); // subtract r128 from r129
+    writeInstructionPart(128);
+
+
+    writeInstructionPart(1); //write acc to r130, this is the length
+    writeInstructionPart(130);
+
+
+    //now need to write from cache to global ram output buffer
 
 
 
@@ -196,6 +241,24 @@ void Compiler::compileEnd()
     memcpy(compiledData+compiledLen, &buff,4);
     compiledLen += 4;
 
+}
+
+void Compiler::writeInstructionPart(uint32_t b)
+{
+    memcpy(functionCode + functionLen, &b, 4);
+    functionLen += 4;
+}
+
+void Compiler::writeInstructionPartSigned(int32_t b)
+{
+    memcpy(functionCode + functionLen, &b, 4);
+    functionLen += 4;
+}
+
+void Compiler::writeStaticInstruction(uint32_t b)
+{
+    memcpy(functionCode + functionLen, &b, 4);
+    functionLen += 8;
 }
 
 void Compiler::compileEnable(std::string en)

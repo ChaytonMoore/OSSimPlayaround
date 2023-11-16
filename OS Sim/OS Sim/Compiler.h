@@ -21,7 +21,14 @@ class Compiler
 	void compileEnd();
 
 
-	
+	void writeInstructionPart(uint32_t b);
+
+	void writeInstructionPartSigned(int32_t b);
+
+	void writeStaticInstruction(uint32_t b);
+
+	char* functionCode;
+	uint32_t functionLen;
 
 
 	char* compiledData;
