@@ -121,6 +121,39 @@ void Compiler::compilePrint(std::string text)
 
 }
 
+void Compiler::compileInput(int address)
+{
+    char* functionData = new char[64];
+    uint32_t functionLen = 0;
+
+    uint32_t buff1 = 21;
+    std::memcpy(functionData + functionLen, &buff1, 4);
+    functionLen += 4;
+
+    uint16_t buff2 = address;
+    std::memcpy(functionData + functionLen, &buff2, 2);
+    buff2 = 256;
+    std::memcpy(functionData + functionLen + 2, &buff2, 2);
+    functionLen += 4;
+
+
+    std::memcpy(compiledData + compiledLen, functionData, functionLen);
+    compiledLen += functionLen;
+    delete[] functionData;
+
+
+}
+
+
+
+void Compiler::compileEnd()
+{
+    uint32_t buff = 22;
+    memcpy(compiledData+compiledLen, &buff,4);
+    compiledLen += 4;
+
+}
+
 void Compiler::compileEnable(std::string en)
 {
     if (en=="outputshell")
@@ -143,6 +176,14 @@ void Compiler::compileLine(std::string in)
     else if (command == "enable")
     {
         compileEnable(splitStr(in, " ").at(1));
+    }
+    else if (command == "input")
+    {
+        compileInput(std::stoi(splitStr(in,"").at(1)));
+    }
+    else if (command == "end")
+    {
+        compileEnd();
     }
 }
 
@@ -167,6 +208,7 @@ void Compiler::compile()
             compileLine(line);
         }
         src.close();
+
     }
     src.close();
 
