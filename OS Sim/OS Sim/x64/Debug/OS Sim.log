@@ -1,2 +1,5 @@
 ﻿  Compiler.cpp
-  OS Sim.vcxproj -> D:\Source\OS Sim\x64\Debug\OS Sim.exe
+C:\Users\21441572\Source\Repos\ChaytonMoore\Other\OSSimPlayaround\OS Sim\OS Sim\Compiler.cpp(85,18): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\21441572\Source\Repos\ChaytonMoore\Other\OSSimPlayaround\OS Sim\OS Sim\Compiler.cpp(93,19): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\21441572\Source\Repos\ChaytonMoore\Other\OSSimPlayaround\OS Sim\OS Sim\Compiler.cpp(109,31): warning C4267: '=': conversion from 'size_t' to 'uint16_t', possible loss of data
+  OS Sim.vcxproj -> C:\Users\21441572\Source\Repos\ChaytonMoore\Other\OSSimPlayaround\OS Sim\x64\Debug\OS Sim.exe

@@ -14,7 +14,14 @@ class Compiler
 
 	void compileInput(int address);
 
+	void compilePrintValue(int address);
+
 	void compileEnable(std::string en);
+
+	void compileEnd();
+
+
+	
 
 
 	char* compiledData;

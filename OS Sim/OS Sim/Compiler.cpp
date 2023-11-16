@@ -144,6 +144,50 @@ void Compiler::compileInput(int address)
 
 }
 
+void Compiler::compilePrintValue(int address)
+{
+    char* functionData = new char[256];
+    uint32_t functionLen = 0;
+
+
+    //load into the acc the constant value
+    uint32_t buff = 19;
+    memcpy(functionData + functionLen, &buff,4);
+    functionLen += 4;
+
+    buff = address;
+    memcpy(functionData + functionLen, &buff, 4);
+    functionLen += 4;
+
+
+    //load that into a memory address 128, this is the start value
+    buff = 1;
+    memcpy(functionData + functionLen, &buff, 4);
+    functionLen += 4;
+
+    buff = 128;
+    memcpy(functionData + functionLen, &buff, 4);
+    functionLen += 4;
+
+
+    //copy this value into 129 as this will be the sort of length value.
+    buff = 1;
+    memcpy(functionData + functionLen, &buff, 4);
+    functionLen += 4;
+
+    buff = 129;
+    memcpy(functionData + functionLen, &buff, 4);
+    functionLen += 4;
+
+    int32_t buff2;
+
+
+
+
+
+
+}
+
 
 
 void Compiler::compileEnd()
@@ -179,7 +223,7 @@ void Compiler::compileLine(std::string in)
     }
     else if (command == "input")
     {
-        compileInput(std::stoi(splitStr(in,"").at(1)));
+        compileInput(std::stoi(splitStr(in," ").at(1)));
     }
     else if (command == "end")
     {

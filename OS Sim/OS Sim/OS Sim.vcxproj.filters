@@ -58,5 +58,11 @@
     <None Include="ROM">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="test.vosl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test.vosmc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -144,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ROM" />
+    <None Include="test.vosl" />
+    <None Include="test.vosmc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

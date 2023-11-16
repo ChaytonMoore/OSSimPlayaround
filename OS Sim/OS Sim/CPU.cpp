@@ -69,6 +69,9 @@ bool CPU::runInstruction()
 	//21: read global ram location
 	//22: halt
 	//23: ram address from instruction
+	//24: jump relative
+	//25: jump if acc 0 relative
+	//26: increment registry
 	
 
 	//how 8 and 9 works
@@ -283,10 +286,37 @@ bool CPU::runInstruction()
 			break;
 
 
+
+		case 24:
+
+			_counter += _instructions[_counter * 2 + 1];
+
+			break;
+
+
+		case 25:
+
+			if (_accumulator == 0)
+			{
+				_counter += _instructions[_counter * 2 + 1];
+			}
+
+
+			break;
+
+		case 26:
+
+			_registers[_instructions[_counter * 2 + 1]]++;
+			_counter++;
+
+
 		default:
 			return true;
 
 	}
+
+
+
 
 	return false;
 
