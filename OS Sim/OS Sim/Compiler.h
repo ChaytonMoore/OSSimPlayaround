@@ -12,6 +12,8 @@ class Compiler
 
 	void compilePrint(std::string text);
 
+	void compileInput(int address);
+
 	void compileEnable(std::string en);
 
 
