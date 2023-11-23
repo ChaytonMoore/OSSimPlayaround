@@ -126,6 +126,8 @@ void Compiler::compileInput(int address)
     functionCode = new char[64];
      functionLen = 0;
 
+
+    //read in memory
     uint32_t buff1 = 21;
     std::memcpy(functionCode + functionLen, &buff1, 4);
     functionLen += 4;
@@ -181,7 +183,7 @@ void Compiler::compilePrintValue(int address)
 
    
 
-
+    //load 129 into acc
     buff = 19;
     memcpy(functionCode+functionLen, &buff,4);
     functionLen += 4;
@@ -191,11 +193,13 @@ void Compiler::compilePrintValue(int address)
     functionLen += 4;
 
     
-
+    //acc = reg[acc]
     buff = 27;
     memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 8;
 
+    
+    //jump +3 if acc == 0
     buff = 25;
     memcpy(functionCode + functionLen, &buff, 4);
     functionLen += 4;
@@ -204,10 +208,12 @@ void Compiler::compilePrintValue(int address)
     memcpy(functionCode + functionLen, &buff2, 4);
     functionLen += 4;
 
+
+
     writeInstructionPart(26); //increment registry
     writeInstructionPart(129);
 
-    writeInstructionPart(24);
+    writeInstructionPart(24); //jump -4
     writeInstructionPartSigned(-4);
 
 
@@ -230,8 +236,18 @@ void Compiler::compilePrintValue(int address)
     //now need to write from cache to global ram output buffer
 
 
+    writeInstructionPart(23);
+    writeInstructionPart(4096);
 
+    writeInstructionPart(20);
+    writeInstructionPartSub(64,256);
+
+    //write to compiled code
+    std::memcpy(compiledData + compiledLen, functionCode, functionLen);
+    compiledLen += functionLen;
+    delete[] functionCode;
 }
+
 
 
 
@@ -243,6 +259,7 @@ void Compiler::compileEnd()
 
 }
 
+
 void Compiler::writeInstructionPart(uint32_t b)
 {
     memcpy(functionCode + functionLen, &b, 4);
@@ -253,6 +270,14 @@ void Compiler::writeInstructionPartSigned(int32_t b)
 {
     memcpy(functionCode + functionLen, &b, 4);
     functionLen += 4;
+}
+
+void Compiler::writeInstructionPartSub(uint16_t b1, uint16_t b2)
+{
+    memcpy(functionCode + functionLen, &b1, 2);
+    memcpy(functionCode + functionLen + 2, &b2, 2);
+    functionLen += 4;
+
 }
 
 void Compiler::writeStaticInstruction(uint32_t b)
@@ -291,6 +316,10 @@ void Compiler::compileLine(std::string in)
     else if (command == "end")
     {
         compileEnd();
+    }
+    else if (command == "$print")
+    {
+        compilePrintValue(std::stoi(splitStr(in, " ").at(1)));
     }
 }
 

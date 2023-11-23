@@ -16,7 +16,12 @@ public:
 
 	void runProgram(Process* newProgram);
 
+	void resumeProgram();
+
 	std::queue<Process*> readyProcesses;
+	std::queue<Process*> waitingProcesses;
+	
+
 
 
 private:
@@ -28,7 +33,7 @@ private:
 	int _registers[1024];
 	__int32 _instructions[2048];
 
-	bool runInstruction();
+	int runInstruction();
 
 
 

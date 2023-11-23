@@ -20,25 +20,57 @@ void CPU::runProgram(Process* newProgram)
 	_accumulator = 0;
 
 	//start running 
-	bool ts = false;
+	int ts = 0;
 	while (true)
 	{
 		ts = runInstruction();
-		if (ts)
+		if (ts!=0)
 		{
 			break;
 		}
 	}
 
-	currentProcess->state = pState_Terminate;
+	if (ts==1)
+	{
+		currentProcess->state = pState_Terminate;
+	}
+	else if (ts==2)
+	{
+		currentProcess->state = pState_Waiting;
+	}
 
+
+
+}
+
+void CPU::resumeProgram()
+{
+	int ts = 0;
+	while (true)
+	{
+		ts = runInstruction();
+		if (ts!=0)
+		{
+			break;
+		}
+	}
+
+	if (ts == 1)
+	{
+		currentProcess->state = pState_Terminate;
+	}
+	else if (ts == 2)
+	{
+		currentProcess->state = pState_Waiting;
+	}
+	
 
 
 }
 
 
 
-bool CPU::runInstruction()
+int CPU::runInstruction()
 {
 
 	//runs instructions
@@ -275,10 +307,10 @@ bool CPU::runInstruction()
 			delete[] tBuffer;
 
 			_counter++;
-			break;
+			return 2; //return for a memory read
 		case 22:
 			//halt
-			return true;
+			return 1;
 
 		case 23:
 			_ramAddressRegister = _instructions[_counter * 2 + 1];
@@ -317,13 +349,13 @@ bool CPU::runInstruction()
 
 
 		default:
-			return true;
+			return 1;
 
 	}
 
 
 
 
-	return false;
+	return 0;
 
 }

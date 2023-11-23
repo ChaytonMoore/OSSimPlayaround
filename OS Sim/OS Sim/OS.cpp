@@ -92,7 +92,7 @@ Process* OS::StartProcessFromFile(std::string fileName)
 
 
 	
-	unsigned int hashedID = rand() % 1000000;
+	unsigned int hashedID = rand();
 	
 	//start process
 
@@ -107,6 +107,7 @@ Process* OS::StartProcessFromFile(std::string fileName)
 		pFile.read((char*)&codeBlockLen,4);
 
 		codeBuffer = new char[codeBlockLen];
+		pFile.read(codeBuffer,codeBlockLen);
 
 		//if more than 1 code block then add new instruction page
 		if (i>0)
@@ -154,6 +155,7 @@ void OS::processStateRecalc()
 			i--; // decrement to re align i
 		}
 
+
 	}
 
 
@@ -164,16 +166,24 @@ void OS::processorPass()
 	processStateRecalc();
 
 
-
-	Process* pToRun = _Processor->readyProcesses.front();
-
-	if (pToRun!=nullptr)
+	if (_Processor->currentProcess->state==pState_Waiting)
 	{
-		_Processor->readyProcesses.pop(); //remove from queue
-
-		_Processor->runProgram(pToRun);
-		_Processor->currentProcess->state = pState_Terminate;
+		_Processor->resumeProgram();
 	}
+	else if (_Processor->readyProcesses.size())
+	{
+		Process* pToRun = _Processor->readyProcesses.front();
+
+		if (pToRun != nullptr)
+		{
+			_Processor->readyProcesses.pop(); //remove from queue
+
+			_Processor->runProgram(pToRun);
+			
+		}
+	}
+
+
 
 
 

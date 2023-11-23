@@ -24,9 +24,12 @@ class Compiler
 	void compileEnd();
 
 
+
 	void writeInstructionPart(uint32_t b);
 
 	void writeInstructionPartSigned(int32_t b);
+
+	void writeInstructionPartSub(uint16_t b1, uint16_t b2);
 
 	void writeStaticInstruction(uint32_t b);
 
