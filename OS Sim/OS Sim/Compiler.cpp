@@ -123,8 +123,24 @@ void Compiler::compilePrint(std::string text)
 
 void Compiler::compileInput(int address)
 {
-    functionCode = new char[64];
+     functionCode = new char[64];
      functionLen = 0;
+
+
+     //put read loc into acc
+     writeInstructionPart(19);
+     writeInstructionPart(0);
+
+     //then put it into the cache
+     writeInstructionPart(1);
+     writeInstructionPart(70);
+
+
+     //set the ram register address
+     writeInstructionPart(18);
+     writeInstructionPart(70);
+
+
 
 
     //read in memory

@@ -301,7 +301,7 @@ int CPU::runInstruction()
 
 			tBuffer = new char[tSize];
 
-			OS::getMainMemory()->readMemory(tLoc,tSize,tBuffer);
+			OS::getMainMemory()->readMemory(_ramAddressRegister,tSize,tBuffer);
 
 			std::memcpy(&_registers[tLoc], tBuffer, tSize);
 			delete[] tBuffer;
