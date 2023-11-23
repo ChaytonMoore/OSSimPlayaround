@@ -1,3 +1,6 @@
+#include <queue>
+
+
 
 class Process;
 class OS;
@@ -13,6 +16,7 @@ public:
 
 	void runProgram(Process* newProgram);
 
+	std::queue<Process*> readyProcesses;
 
 
 private:

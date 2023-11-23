@@ -4,11 +4,7 @@
 
 void CPU::runProgram(Process* newProgram)
 {
-	//make old program wait
-	if (currentProcess!=nullptr)
-	{
-		currentProcess->state = pState_Waiting;
-	}
+
 
 	//set current program
 	currentProcess = newProgram;
@@ -33,6 +29,9 @@ void CPU::runProgram(Process* newProgram)
 			break;
 		}
 	}
+
+	currentProcess->state = pState_Terminate;
+
 
 
 }

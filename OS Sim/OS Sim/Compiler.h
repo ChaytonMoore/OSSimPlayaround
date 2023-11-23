@@ -8,6 +8,9 @@
 
 class Compiler
 {
+
+
+
 	void compileLine(std::string in);
 
 	void compilePrint(std::string text);
@@ -36,7 +39,7 @@ class Compiler
 
 
 public:
-	void compile();
+	void compile(bool compileToProgramFile);
 
 
 };

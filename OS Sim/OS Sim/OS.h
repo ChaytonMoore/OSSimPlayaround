@@ -1,6 +1,8 @@
 #pragma once
+
 #include "Memory.h"
 #include "CPU.h"
+
 
 class Process;
 
@@ -38,7 +40,16 @@ public:
 
 	static Process* StartProcess(unsigned int ID, int priority);
 
+	static Process* StartProcessFromFile(std::string fileName);
+
 
 	static void takeInput(char* in, size_t len);
+
+
+
+	static void processStateRecalc();
+
+
+	static void processorPass();
 };
 

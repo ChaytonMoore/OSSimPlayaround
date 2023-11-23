@@ -294,7 +294,7 @@ void Compiler::compileLine(std::string in)
     }
 }
 
-void Compiler::compile()
+void Compiler::compile(bool compileToProgramFile)
 {
 
 
@@ -303,7 +303,6 @@ void Compiler::compile()
 
     compiledData = new char[4096];
     compiledLen = 0;
-
 
     std::ifstream src;
     std::string line;
@@ -319,15 +318,39 @@ void Compiler::compile()
     }
     src.close();
 
-    //write code to file
+    if (compileToProgramFile)
+    {
 
-    std::ofstream outputFile;
-    outputFile.open("test.vosmc", std::ios::binary | std::ios::out);
 
-    outputFile.write((char*) & compiledLen, 4);
-    outputFile.write(compiledData,compiledLen);
-    outputFile.close();
+        //write code to file
 
+        std::ofstream outputFile;
+        outputFile.open("test.vosp", std::ios::binary | std::ios::out);
+
+        int32_t priority = 101;
+        uint32_t codechunks = 1;
+
+        outputFile.write((char*)&priority, 4);
+        outputFile.write((char*)&codechunks, 4);
+
+
+        outputFile.write((char*)&compiledLen, 4);
+        outputFile.write(compiledData, compiledLen);
+        outputFile.close();
+    }
+    else
+    {
+
+
+        //write code to file
+
+        std::ofstream outputFile;
+        outputFile.open("test.vosmc", std::ios::binary | std::ios::out);
+
+        outputFile.write((char*)&compiledLen, 4);
+        outputFile.write(compiledData, compiledLen);
+        outputFile.close();
+    }
 
     std::cout << "Finished Compiling"<<std::endl;
 

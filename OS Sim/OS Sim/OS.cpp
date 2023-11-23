@@ -31,7 +31,7 @@ void OS::bootOS()
 
 	//boot requires reading from ROM
 	char fBuffer[4];
-	std::ifstream ROM("D:\\Source\\OS Sim\\OS Sim\\ROM", std::ios::in | std::ios::binary);
+	std::ifstream ROM("C:\\Users\\21441572\\Source\\Repos\\ChaytonMoore\\OSSimPlayaround\\OS Sim\\OS Sim\\ROM", std::ios::in | std::ios::binary);
 	
 	ROM.read(fBuffer, 4);
 	int restOfFileLength = *(int*)fBuffer;
@@ -70,6 +70,58 @@ Process* OS::StartProcess(unsigned int ID, int priority)
 
 	//allocate a single instruction page
 	nProc->instructionPages.push_back(_MainMemory->allocatePage(nProc));
+	nProc->state = processState::pState_New;
+
+	return nProc;
+}
+
+Process* OS::StartProcessFromFile(std::string fileName)
+{
+
+	//read in file
+	
+	std::ifstream pFile(fileName, std::ios::in | std::ios::binary);
+
+	//read in meta data
+
+	__int32 priority;
+	pFile.read((char*)&priority, 4);
+
+	unsigned __int32 codeBlocks;
+	pFile.read((char*)&codeBlocks, 4);
+
+
+	
+	unsigned int hashedID = rand() % 1000000;
+	
+	//start process
+
+	Process* nProc = StartProcess(hashedID,priority);
+
+	uint32_t codeBlockLen;
+	char* codeBuffer;
+
+
+	for (size_t i = 0; i < codeBlocks; i++)
+	{
+		pFile.read((char*)&codeBlockLen,4);
+
+		codeBuffer = new char[codeBlockLen];
+
+		//if more than 1 code block then add new instruction page
+		if (i>0)
+		{
+			nProc->instructionPages.push_back(_MainMemory->allocatePage(nProc));
+		}
+
+
+		std::memcpy(nProc->instructionPages.at(i), codeBuffer, codeBlockLen);
+
+		delete[] codeBuffer;
+	}
+
+
+
 
 	return nProc;
 }
@@ -77,6 +129,52 @@ Process* OS::StartProcess(unsigned int ID, int priority)
 void OS::takeInput(char* in, size_t len)
 {
 	memcpy(_MainMemory->getLocationOfMemory(_IOHandling->stack[0]->startAddress),in,len);
+
+
+}
+
+void OS::processStateRecalc()
+{
+	//move new processes to ready stack
+
+
+	for (size_t i = 0; i < processes.size(); i++)
+	{
+		if (processes[i]->state==pState_New)
+		{
+			processes[i]->state = pState_Ready;
+
+			//add to cpu queue
+			_Processor->readyProcesses.push(processes[i]);
+		}
+
+		if (processes[i]->state==pState_Terminate)
+		{
+			processes.erase(processes.begin()+i);
+			i--; // decrement to re align i
+		}
+
+	}
+
+
+}
+
+void OS::processorPass()
+{
+	processStateRecalc();
+
+
+
+	Process* pToRun = _Processor->readyProcesses.front();
+
+	if (pToRun!=nullptr)
+	{
+		_Processor->readyProcesses.pop(); //remove from queue
+
+		_Processor->runProgram(pToRun);
+		_Processor->currentProcess->state = pState_Terminate;
+	}
+
 
 
 }
